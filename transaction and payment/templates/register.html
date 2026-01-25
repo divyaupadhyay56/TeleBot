@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Account</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-page">
+
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <div class="login-header">
+            <h2>Create Account</h2>
+            <p>Hospital Payment System</p>
+        </div>
+
+        <form method="post">
+            <input name="username" placeholder="Username" required>
+            <input name="password" type="password" placeholder="Password" required>
+
+            <select name="role">
+                <option value="user">User (Cashier / Staff)</option>
+                <option value="admin">Admin (Requires Approval)</option>
+            </select>
+
+            <button>Create Account</button>
+        </form>
+
+        {% if error %}
+        <p class="login-error">{{ error }}</p>
+        {% endif %}
+
+        {% if success %}
+        <p style="color:green; text-align:center">{{ success }}</p>
+        {% endif %}
+
+        <p style="text-align:center; margin-top:12px">
+            <a href="/login">Back to Login</a>
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>
