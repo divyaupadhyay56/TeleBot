@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>New Payment</h2>
+
+<div class="card">
+    <input id="patient_name" placeholder="Patient Name">
+    <input id="patient_id" placeholder="Patient ID">
+    <input id="visit_id" placeholder="Visit ID">
+</div>
+
+   <div class="card">
+    <h4 class="section-title">Select Services</h4>
+
+    <div class="services-grid">
+
+        <!-- Consultation & OPD -->
+        <label class="service-item">
+            <input type="checkbox" value="General Consultation" data-price="500">
+            <span>General Consultation</span>
+            <span class="price">₹500</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="Specialist Consultation" data-price="800">
+            <span>Specialist Consultation</span>
+            <span class="price">₹800</span>
+        </label>
+
+        <!-- Imaging -->
+        <label class="service-item">
+            <input type="checkbox" value="X-Ray" data-price="1200">
+            <span>X-Ray</span>
+            <span class="price">₹1200</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="Ultrasound" data-price="1500">
+            <span>Ultrasound</span>
+            <span class="price">₹1500</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="CT Scan" data-price="3500">
+            <span>CT Scan</span>
+            <span class="price">₹3500</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="MRI Scan" data-price="5000">
+            <span>MRI Scan</span>
+            <span class="price">₹5000</span>
+        </label>
+
+        <!-- Laboratory Tests -->
+        <label class="service-item">
+            <input type="checkbox" value="CBC" data-price="400">
+            <span>CBC (Complete Blood Count)</span>
+            <span class="price">₹400</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="KFT" data-price="900">
+            <span>KFT (Kidney Function Test)</span>
+            <span class="price">₹900</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="LFT" data-price="850">
+            <span>LFT (Liver Function Test)</span>
+            <span class="price">₹850</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="Blood Sugar (Fasting)" data-price="150">
+            <span>Blood Sugar (Fasting)</span>
+            <span class="price">₹150</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="Blood Sugar (PP)" data-price="150">
+            <span>Blood Sugar (PP)</span>
+            <span class="price">₹150</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="HbA1c" data-price="600">
+            <span>HbA1c</span>
+            <span class="price">₹600</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="Lipid Profile" data-price="700">
+            <span>Lipid Profile</span>
+            <span class="price">₹700</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="Thyroid Profile" data-price="650">
+            <span>Thyroid Profile</span>
+            <span class="price">₹650</span>
+        </label>
+
+        <!-- Cardiac -->
+        <label class="service-item">
+            <input type="checkbox" value="ECG" data-price="300">
+            <span>ECG</span>
+            <span class="price">₹300</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="2D Echo" data-price="2500">
+            <span>2D Echo</span>
+            <span class="price">₹2500</span>
+        </label>
+
+        <!-- Procedures -->
+        <label class="service-item">
+            <input type="checkbox" value="Dressing" data-price="200">
+            <span>Dressing</span>
+            <span class="price">₹200</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="Minor Procedure" data-price="1000">
+            <span>Minor Procedure</span>
+            <span class="price">₹1000</span>
+        </label>
+
+        <label class="service-item">
+            <input type="checkbox" value="Physiotherapy Session" data-price="600">
+            <span>Physiotherapy Session</span>
+            <span class="price">₹600</span>
+        </label>
+
+        <!-- Emergency -->
+        <label class="service-item">
+            <input type="checkbox" value="Emergency Charges" data-price="1500">
+            <span>Emergency Charges</span>
+            <span class="price">₹1500</span>
+        </label>
+
+    </div>
+</div>
+
+
+<div class="card">
+    <textarea id="remarks" placeholder="Remarks"></textarea>
+    <select id="payment_method">
+        <option>Cash</option>
+         <option>UPI/Wallet/Card/Net Banking</option>
+        <option>Cheque</option>
+        <option>Other</option>
+    </select>
+    <div class="total-box">Total: ₹<span id="total">0</span></div>
+    <button id="pay">Process Payment</button>
+</div>
+
+<div id="result"></div>
+
+<script src="{{ url_for('static', filename='js/payment.js') }}"></script>
+{% endblock %}
