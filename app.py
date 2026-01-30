@@ -1,69 +1,32 @@
-<<<<<<< HEAD
 from flask import Flask
-from Chatbot.models import db
-from Chatbot.routes.sync import sync_bp
-from Chatbot.routes.chatbot import chatbot_bp
+from dotenv import load_dotenv
+import os
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chatbot.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+from TeleBot.models import db
+from config import DevelopmentConfig
 
-db.init_app(app)
+load_dotenv()
 
-# Register blueprints
-app.register_blueprint(sync_bp)
-app.register_blueprint(chatbot_bp)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(DevelopmentConfig)
 
-# Create tables if they don't exist
-with app.app_context():
-    db.create_all()
+    db.init_app(app)
 
-@app.route("/")
-def home():
-    return {"status": "Flask backend running", "service": "Chatbot API"}
+    # register blueprints here
+    from TeleBot.routes.appointment import appointment_bp
+    from TeleBot.routes.chatbot import chatbot_bp
+    from TeleBot.routes.seed import seed_bp
+    from TeleBot.routes.sync import sync_bp
+
+    app.register_blueprint(appointment_bp)
+    app.register_blueprint(chatbot_bp)
+    app.register_blueprint(seed_bp)
+    app.register_blueprint(sync_bp)
+
+    return app
+
 
 if __name__ == "__main__":
-    # IMPORTANT: Run with module mode, not direct file mode
+    app = create_app()
     app.run(debug=True)
-=======
-from flask import Flask
-from Chatbot.models import db
-from Chatbot.routes.sync import sync_bp
-from Chatbot.routes.chatbot import chatbot_bp
-from Chatbot.routes.appointment import appointment_bp
-from Chatbot.routes.seed import seed_bp
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chatbot.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db.init_app(app)
-
-# ✅ Register blueprints
-app.register_blueprint(sync_bp)
-app.register_blueprint(chatbot_bp)
-app.register_blueprint(appointment_bp)
-app.register_blueprint(seed_bp)
-
-with app.app_context():
-    db.create_all()
-
-@app.route("/")
-def home():
-    return {"status": "Flask backend running", "service": "Chatbot API"}
-
-# ✅ Mode selector (2 options)
-@app.route("/options")
-def options():
-    return {
-        "status": "success",
-        "options": [
-            {"mode": "ai", "title": "Talk to AI Chatbot", "endpoint": "/chat"},
-            {"mode": "doctor", "title": "Talk to Doctor", "endpoint": "/doctors"}
-        ]
-    }
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
->>>>>>> dcae538 (added all the codes)

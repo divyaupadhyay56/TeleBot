@@ -3,6 +3,7 @@ from datetime import timedelta
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config:
     # ----------------------
     # Core Flask Settings
@@ -13,11 +14,10 @@ class Config:
     TESTING = False
 
     # ----------------------
-    # Database Configuration
+    # Database Configuration (MySQL)
     # ----------------------
     SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "DATABASE_URL",
-        "sqlite:///" + os.path.join(BASE_DIR, "telemedicine.db")
+        "DATABASE_URL"
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -33,14 +33,12 @@ class Config:
     # ----------------------
     AI_MODEL_TYPE = os.environ.get("AI_MODEL_TYPE", "rule_based")
     AI_CONFIDENCE_THRESHOLD = 0.6
-
-    # Example for future LLM usage
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
     # ----------------------
     # Voice Processing
     # ----------------------
-    SPEECH_LANGUAGE = "en-IN"   # Indian English
+    SPEECH_LANGUAGE = "en-IN"
     AUDIO_UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads", "audio")
     MAX_AUDIO_SIZE_MB = 10
 
@@ -62,7 +60,7 @@ class Config:
     ]
 
     # ----------------------
-    # Rate Limiting (future)
+    # Rate Limiting
     # ----------------------
     RATELIMIT_DEFAULT = "100/hour"
 
