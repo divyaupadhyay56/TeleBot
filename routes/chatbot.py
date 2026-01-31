@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from Chatbot.models import db, Conversation, Message
-from Chatbot.services.ai_engine import analyze_symptoms
-from Chatbot.services.context_manager import build_context
+from TeleBot.models import db, Conversation, Message
+from TeleBot.services.ai_engine import analyze_symptoms
+from TeleBot.services.context_manager import build_context
 
 chatbot_bp = Blueprint("chatbot", __name__)
 
