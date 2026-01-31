@@ -3,7 +3,8 @@ from TeleBot.config import DevelopmentConfig
 from TeleBot.models import db
 from TeleBot.routes.chatbot import chatbot_bp
 from TeleBot.routes.appointment import appointment_bp
-
+from TeleBot.routes.sync import sync_bp
+from TeleBot.routes.seed import seed_bp
 
 def create_app():
     app = Flask(__name__)
@@ -13,6 +14,8 @@ def create_app():
 
     app.register_blueprint(chatbot_bp)
     app.register_blueprint(appointment_bp)
+    app.register_blueprint(sync_bp)
+    app.register_blueprint(seed_bp)
 
     @app.route("/")
     def home():
@@ -22,7 +25,6 @@ def create_app():
         }
 
     return app
-
 
 app = create_app()
 
