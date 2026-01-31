@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from Chatbot.models import db, Doctor
+from TeleBot.models import db, Doctor
 
 seed_bp = Blueprint("seed", __name__)
 
