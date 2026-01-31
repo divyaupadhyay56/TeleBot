@@ -4,34 +4,32 @@ from TeleBot.models import db, Doctor, Appointment
 appointment_bp = Blueprint("appointment", __name__)
 
 @appointment_bp.route("/doctors", methods=["GET"])
-def list_doctors():
+def get_doctors():
     doctors = Doctor.query.all()
-    return jsonify({
-        "status": "success",
-        "doctors": [
-            {
-                "id": d.id,
-                "name": d.name,
-                "specialization": d.specialization,
-                "city": d.city,
-                "contact": d.contact
-            } for d in doctors
-        ]
-    })
+    return jsonify([
+        {
+            "id": d.id,
+            "name": d.name,
+            "specialization": d.specialization
+        }
+        for d in doctors
+    ])
 
 @appointment_bp.route("/appointment", methods=["POST"])
 def schedule_appointment():
-    data = request.get_json(force=True)
+    data = request.get_json()
 
     appt = Appointment(
-        user_id=data.get("user_id"),
-        doctor_id=data.get("doctor_id"),
-        date=data.get("date"),
-        time=data.get("time"),
-        reason=data.get("reason")
+        user_id=data["user_id"],          # ✅ NOW VALID
+        doctor_id=data["doctor_id"],
+        patient_name=data["patient_name"],
+        time=data["time"]
     )
 
     db.session.add(appt)
     db.session.commit()
 
-    return jsonify({"status": "success", "appointment_id": appt.id})
+    return jsonify({
+        "status": "success",
+        "message": "Appointment scheduled successfully"
+    })

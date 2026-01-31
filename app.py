@@ -3,8 +3,7 @@ from TeleBot.config import DevelopmentConfig
 from TeleBot.models import db
 from TeleBot.routes.chatbot import chatbot_bp
 from TeleBot.routes.appointment import appointment_bp
-from TeleBot.routes.sync import sync_bp
-from TeleBot.routes.seed import seed_bp
+from TeleBot.routes.sync import sync_bp   # 🔥 ADD THIS
 
 def create_app():
     app = Flask(__name__)
@@ -12,19 +11,27 @@ def create_app():
 
     db.init_app(app)
 
+    with app.app_context():
+        db.create_all()
+
     app.register_blueprint(chatbot_bp)
     app.register_blueprint(appointment_bp)
-    app.register_blueprint(sync_bp)
-    app.register_blueprint(seed_bp)
+    app.register_blueprint(sync_bp)   # 🔥 REGISTER HERE
 
     @app.route("/")
     def home():
         return {
             "service": "TeleBot Backend",
-            "options": ["Talk to AI", "Talk to Doctor"]
+            "routes": [
+                "/chat",
+                "/sync",
+                "/doctors",
+                "/appointment"
+            ]
         }
 
     return app
+
 
 app = create_app()
 
