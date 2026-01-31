@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from Chatbot.models import db, Message
+from TeleBot.models import db, Message
 
 sync_bp = Blueprint("sync", __name__)
 
