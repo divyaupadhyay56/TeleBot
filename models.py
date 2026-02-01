@@ -10,8 +10,9 @@ class Conversation(db.Model):
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     conversation_id = db.Column(db.Integer, db.ForeignKey("conversation.id"))
-    sender = db.Column(db.String(10))
+    sender = db.Column(db.String(10))  
     text = db.Column(db.Text)
+    agent_type = db.Column(db.String(30))  
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Doctor(db.Model):
