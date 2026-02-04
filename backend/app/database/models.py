@@ -1,6 +1,14 @@
 from datetime import datetime
 import enum
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Date, Time, ForeignKey, Enum
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    Boolean,
+    ForeignKey,
+    
+)
 from sqlalchemy.orm import relationship
 
 from .db import db
@@ -8,6 +16,7 @@ from .db import db
 # ======================
 # AUTH & USERS
 # ======================
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -25,18 +34,19 @@ class SystemRole(enum.Enum):
     pharmacy = "pharmacy"
     admin = "admin"
 
+
 class Role(db.Model):
     __tablename__ = "roles"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True)
 
+
 class UserRole(db.Model):
     __tablename__ = "user_roles"
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     role_id = db.Column(db.Integer, db.ForeignKey("roles.id"), primary_key=True)
-
 
 
 class OTP(db.Model):
@@ -49,28 +59,22 @@ class OTP(db.Model):
     expires_at = Column(DateTime)
     resend_after = Column(DateTime)
 
+
 # ======================
 # PROFILES
 # ======================
 
+
 class DoctorProfile(db.Model):
     __tablename__ = "doctor_profiles"
 
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey("users.id"),
-        primary_key=True
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
 
     name = db.Column(db.String(100), nullable=False)
     specialization = db.Column(db.String(100), nullable=False)
     experience_years = db.Column(db.Integer, nullable=False)
 
-    hospital_id = db.Column(
-        db.Integer,
-        db.ForeignKey("hospitals.id"),
-        nullable=True
-    )
+    hospital_id = db.Column(db.Integer, db.ForeignKey("hospitals.id"), nullable=True)
 
     hospital = db.relationship("Hospital", backref="doctors")
 
@@ -84,12 +88,20 @@ class PatientProfile(db.Model):
     gender = db.Column(db.String(10))
     blood_group = db.Column(db.String(5))
 
+
 class PharmacyProfile(db.Model):
     __tablename__ = "pharmacy_profiles"
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     store_name = db.Column(db.String(150))
     license_number = db.Column(db.String(50))
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+
+    home_delivery_available = db.Column(db.Boolean, default=False)
+    self_pickup_available = db.Column(db.Boolean, default=True)
+
+    is_active = db.Column(db.Boolean, default=True)
 
 
 # ======================
@@ -104,6 +116,7 @@ class DoctorAvailability(db.Model):
     end_time = db.Column(db.DateTime)
     is_booked = db.Column(db.Boolean, default=False)
 
+
 class Appointment(db.Model):
     __tablename__ = "appointments"
 
@@ -113,9 +126,11 @@ class Appointment(db.Model):
     appointment_time = db.Column(db.DateTime)
     status = db.Column(db.String(30), default="scheduled")
 
+
 # ======================
 # TELEMEDICINE & CHAT
 # ======================
+
 
 class Consultation(db.Model):
     __tablename__ = "consultations"
@@ -136,10 +151,10 @@ class ChatMessage(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
-
 # ======================
 # MEDICAL RECORDS
 # ======================
+
 
 class MedicalRecord(db.Model):
     __tablename__ = "medical_records"
@@ -169,15 +184,17 @@ class PrescriptionItem(db.Model):
     dosage = db.Column(db.String(50))
     duration = db.Column(db.String(50))
 
+
 # ======================
 # HOSPITAL & BEDS
 # ======================
+
 
 class Hospital(db.Model):
     __tablename__ = "hospitals"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable= False)
+    name = db.Column(db.String(150), nullable=False)
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
 
@@ -195,11 +212,15 @@ class Bed(db.Model):
 # EMERGENCY
 # ======================
 
+
 class Ambulance(db.Model):
     __tablename__ = "ambulances"
 
     id = db.Column(db.Integer, primary_key=True)
     vehicle_number = db.Column(db.String(50))
+    is_available = db.Column(db.Boolean, default=True)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
     is_available = db.Column(db.Boolean, default=True)
 
 
@@ -208,13 +229,17 @@ class EmergencyRequest(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.Integer, db.ForeignKey("patient_profiles.user_id"))
-    location_lat = db.Column(db.Float)
-    location_lng = db.Column(db.Float)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    hospital_id = db.Column(db.Integer, nullable=True)
+    ambulance_id = db.Column(db.Integer, nullable=True)
     status = db.Column(db.String(30), default="pending")
+
 
 # ======================
 # PAYMENT AND TRANSCATIONS
 # ======================
+
 
 class PaymentStatus(enum.Enum):
     approved = "approved"
@@ -232,21 +257,15 @@ class Payment(db.Model):
 
     # Relations
     user_id = db.Column(
-        db.Integer,
-        db.ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
+        db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     patient_id = db.Column(
-        db.Integer,
-        db.ForeignKey("patient_profiles.user_id"),
-        nullable=False
+        db.Integer, db.ForeignKey("patient_profiles.user_id"), nullable=False
     )
 
     appointment_id = db.Column(
-        db.Integer,
-        db.ForeignKey("appointments.id"),
-        nullable=False
+        db.Integer, db.ForeignKey("appointments.id"), nullable=False
     )
 
     # Payment details
@@ -257,21 +276,15 @@ class Payment(db.Model):
     remarks = db.Column(db.Text, nullable=True)
 
     status = db.Column(
-        db.Enum(PaymentStatus),
-        default=PaymentStatus.approved,
-        nullable=False
+        db.Enum(PaymentStatus), default=PaymentStatus.approved, nullable=False
     )
 
-    created_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # ORM relationships (optional but recommended)
     user = relationship("User")
     patient = relationship("PatientProfile")
     appointment = relationship("Appointment")
-
 
 
 def seed_roles():
@@ -283,6 +296,7 @@ def seed_roles():
             db.session.add(Role(name=role.value))
 
     db.session.commit()
+
 
 class RefreshToken(db.Model):
     __tablename__ = "refresh_tokens"
@@ -316,7 +330,6 @@ class RefreshToken(db.Model):
 
 #     created_at = Column(DateTime, default=datetime.utcnow)
 #     is_emergency_reserved = Column(Boolean, default=False)
-
 
 
 # class Appointment(db.Model):
@@ -472,6 +485,7 @@ class RefreshToken(db.Model):
 
 #     created_at = Column(DateTime, default=datetime.utcnow)
 
+
 class Conversation(db.Model):
     __tablename__ = "conversations"
 
@@ -483,11 +497,10 @@ class Conversation(db.Model):
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     conversation_id = db.Column(db.Integer, db.ForeignKey("conversations.id"))
-    sender = db.Column(db.String(10))  
+    sender = db.Column(db.String(10))
     text = db.Column(db.Text)
-    # agent_type = db.Column(db.String(30))  
+    # agent_type = db.Column(db.String(30))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
 
 
 # class Hospital(db.Model):
