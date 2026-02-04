@@ -1,21 +1,18 @@
 from flask import Blueprint
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.services.pharmacy_service import get_all_pharmacies, get_pharmacy_by_id
 
-from app.database.models import PharmacyProfile
-
-pharmacies_bp = Blueprint("pharmacies", __name__, url_prefix="/pharmacies")
+pharmacy_bp = Blueprint("pharmacies", __name__, url_prefix="/pharmacies")
 
 
-@pharmacies_bp.route("/profile", methods=["GET"])
-@jwt_required()
-def pharmacy_profile():
-    user_id = get_jwt_identity()
+@pharmacy_bp.route("/", methods=["GET"])
+def list_pharmacies():
+    return {"pharmacies": get_all_pharmacies()}
 
-    pharmacy = PharmacyProfile.query.filter_by(user_id=user_id).first()
+
+@pharmacy_bp.route("/<int:user_id>", methods=["GET"])
+def pharmacy_profile(user_id):
+    pharmacy = get_pharmacy_by_id(user_id)
     if not pharmacy:
-        return {"error": "Pharmacy profile not found"}, 404
+        return {"error": "Pharmacy not found"}, 404
 
-    return {
-        "store_name": pharmacy.store_name,
-        "license_number": pharmacy.license_number,
-    }, 200
+    return pharmacy

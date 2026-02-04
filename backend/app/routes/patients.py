@@ -1,21 +1,18 @@
 from flask import Blueprint
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.database.models import PatientProfile
+from app.services.patient_service import get_all_patients, get_patient_by_id
 
-patients_bp = Blueprint("patients", __name__, url_prefix="/patients")
+patient_bp = Blueprint("patients", __name__, url_prefix="/patients")
 
-@patients_bp.route("/profile", methods=["GET"])
-@jwt_required()
-def patient_profile():
-    user_id = get_jwt_identity()
 
-    patient = PatientProfile.query.filter_by(user_id=user_id).first()
+@patient_bp.route("/", methods=["GET"])
+def list_patients():
+    return {"patients": get_all_patients()}
+
+
+@patient_bp.route("/<int:user_id>", methods=["GET"])
+def patient_profile(user_id):
+    patient = get_patient_by_id(user_id)
     if not patient:
-        return {"error": "Patient profile not found"}, 404
+        return {"error": "Patient not found"}, 404
 
-    return {
-        "name": patient.name,
-        "age": patient.age,
-        "gender": patient.gender,
-        "blood_group": patient.blood_group,
-    }, 200
+    return patient

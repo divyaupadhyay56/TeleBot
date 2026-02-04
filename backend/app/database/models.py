@@ -56,11 +56,24 @@ class OTP(db.Model):
 class DoctorProfile(db.Model):
     __tablename__ = "doctor_profiles"
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
-    name = db.Column(db.String(100))
-    specialization = db.Column(db.String(100))
-    experience_years = db.Column(db.Integer)
-    hospital_name = db.Column(db.String(100), db.ForeignKey("hospitals.name"), nullable = True)
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        primary_key=True
+    )
+
+    name = db.Column(db.String(100), nullable=False)
+    specialization = db.Column(db.String(100), nullable=False)
+    experience_years = db.Column(db.Integer, nullable=False)
+
+    hospital_id = db.Column(
+        db.Integer,
+        db.ForeignKey("hospitals.id"),
+        nullable=True
+    )
+
+    hospital = db.relationship("Hospital", backref="doctors")
+
 
 class PatientProfile(db.Model):
     __tablename__ = "patient_profiles"
@@ -164,7 +177,7 @@ class Hospital(db.Model):
     __tablename__ = "hospitals"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150))
+    name = db.Column(db.String(150), nullable= False)
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
 
@@ -459,21 +472,21 @@ class RefreshToken(db.Model):
 
 #     created_at = Column(DateTime, default=datetime.utcnow)
 
-# class Conversation(db.Model):
-#     __tablename__ = "conversations"
+class Conversation(db.Model):
+    __tablename__ = "conversations"
 
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.String(50), nullable=False)
-#     appointment_id = Column(Integer, ForeignKey("appointments.id"))
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), nullable=False)
+    user_id = Column(db.Integer, ForeignKey("users.id"))
 
 
-# class Message(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     conversation_id = db.Column(db.Integer, db.ForeignKey("conversations.id"))
-#     sender = db.Column(db.String(10))  
-#     text = db.Column(db.Text)
-#     agent_type = db.Column(db.String(30))  
-#     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    conversation_id = db.Column(db.Integer, db.ForeignKey("conversations.id"))
+    sender = db.Column(db.String(10))  
+    text = db.Column(db.Text)
+    # agent_type = db.Column(db.String(30))  
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 

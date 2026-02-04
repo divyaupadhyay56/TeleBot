@@ -3,11 +3,14 @@ from app.config import Config
 from app.database.db import db
 from app.database.models import seed_roles, RefreshToken
 from app.routes.auth import auth_bp
-from app.routes.doctors import doctors_bp
-from app.routes.patients import patients_bp
-from app.routes.hospitals import hospitals_bp
-from app.routes.pharmacies import pharmacies_bp
+from app.routes.doctors import doctor_bp
+from app.routes.patients import patient_bp
+from app.routes.hospitals import hospital_bp
+from app.routes.pharmacies import pharmacy_bp
+from app.routes.chatbot import chatbot_bp
+from app.routes.appointments import appointments_bp
 from flask_jwt_extended import JWTManager
+
 
 jwt = JWTManager()
 
@@ -30,8 +33,10 @@ def create_app():
         seed_roles()
 
     app.register_blueprint(auth_bp)
-    app.register_blueprint(doctors_bp)
-    app.register_blueprint(patients_bp)
-    app.register_blueprint(hospitals_bp)
-    app.register_blueprint(pharmacies_bp)
+    app.register_blueprint(doctor_bp)
+    app.register_blueprint(patient_bp)
+    app.register_blueprint(hospital_bp)
+    app.register_blueprint(pharmacy_bp)
+    app.register_blueprint(chatbot_bp)
+    app.register_blueprint(appointments_bp)
     return app

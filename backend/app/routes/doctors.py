@@ -1,26 +1,40 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.database.models import DoctorProfile
 from app.database.db import db
+from app.database.models import DoctorProfile
 
-doctors_bp = Blueprint("doctors", __name__, url_prefix="/doctors")
+doctor_bp = Blueprint("doctors", __name__, url_prefix="/doctors")
 
-@doctors_bp.route("/profile", methods=["GET"])
-@jwt_required()
-def doctor_profile():
-    user_id = get_jwt_identity()
 
-    doctor = DoctorProfile.query.filter_by(user_id=user_id).first()
-    if not doctor:
-        return {"error": "Doctor profile not found"}, 404
-
-    return {
-        "name": doctor.name,
-        "specialization": doctor.specialization,
-        "experience_years": doctor.experience_years,
-        "hospital_name": doctor.hospital_name,
-        "hospital_location": {
-            "latitude": doctor.hospital.latitude if doctor.hospital else None,
-            "longitude": doctor.hospital.longitude if doctor.hospital else None,
+@doctor_bp.route("/", methods=["GET"])
+def list_doctors():
+    doctors = DoctorProfile.query.all()
+    return {"doctors": [
+        {
+            "user_id": d.user_id,
+            "name": d.name,
+            "specialization": d.specialization,
+            "experience_years": d.experience_years,
         }
-    }, 200
+        for d in doctors
+    ]}
+
+
+# ✅ THIS WAS MISSING
+@doctor_bp.route("/", methods=["POST"])
+@jwt_required()
+def create_doctor_profile():
+    data = request.json
+    user_id = get_jwt_identity()  # take from JWT, NOT from client
+
+    doctor = DoctorProfile(
+        user_id=user_id,
+        name=data.get("name"),
+        specialization=data.get("specialization"),
+        experience_years=data.get("experience_years"),
+    )
+
+    db.session.add(doctor)
+    db.session.commit()
+
+    return {"message": "Doctor profile created"}, 201
