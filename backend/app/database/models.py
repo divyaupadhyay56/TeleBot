@@ -365,7 +365,27 @@ class PharmacyInventory(db.Model):
 
     is_active = db.Column(db.Boolean, default=True)
 
-   
+
+class JanaushadhiKendra(db.Model):
+    __tablename__ = "janaushadhi_kendras"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    sr_no = db.Column(db.Integer)
+    kendra_code = db.Column(db.String(50), unique=True)
+
+    name = db.Column(db.String(255))
+    state_name = db.Column(db.String(100))
+    district_name = db.Column(db.String(100))
+
+    pin_code = db.Column(db.String(10))
+    address = db.Column(db.Text)
+
+    # optional – add later if you geocode
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+
+
 # class SlotStatus(str, enum.Enum):
 #     free = "free"
 #     booked = "booked"

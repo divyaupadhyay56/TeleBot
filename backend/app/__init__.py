@@ -15,8 +15,7 @@ from app.routes.prescriptions import prescription_bp
 from app.routes.medicines import medicine_bp
 from app.routes.billing import billing_bp
 from app.routes.payments import payment_bp
-
-
+from app.routes.janaushadhi import janaushadhi_bp
 
 
 jwt = JWTManager()
@@ -52,4 +51,5 @@ def create_app():
     app.register_blueprint(medicine_bp)
     app.register_blueprint(payment_bp)
     app.register_blueprint(billing_bp)
+    app.register_blueprint(janaushadhi_bp)
     return app
