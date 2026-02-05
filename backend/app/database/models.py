@@ -9,7 +9,7 @@ from sqlalchemy import (
     ForeignKey,
     
 )
-from sqlalchemy.orm import relationship
+
 
 from .db import db
 
@@ -170,9 +170,15 @@ class Prescription(db.Model):
     __tablename__ = "prescriptions"
 
     id = db.Column(db.Integer, primary_key=True)
+    appointment_id = db.Column(db.Integer, db.ForeignKey("appointments.id"))
     patient_id = db.Column(db.Integer, db.ForeignKey("patient_profiles.user_id"))
     doctor_id = db.Column(db.Integer, db.ForeignKey("doctor_profiles.user_id"))
+
+    file_path = db.Column(db.String(255), nullable=False)
+    file_type = db.Column(db.String(20))  # pdf / image
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 
 class PrescriptionItem(db.Model):
@@ -252,39 +258,16 @@ class Payment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    # External / gateway transaction reference
-    transaction_id = db.Column(db.String(50), unique=True, nullable=False)
+    bill_id = db.Column(db.Integer, db.ForeignKey("bills.id"))
+    razorpay_order_id = db.Column(db.String(100))
+    razorpay_payment_id = db.Column(db.String(100))
+    razorpay_signature = db.Column(db.String(255))
 
-    # Relations
-    user_id = db.Column(
-        db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
-
-    patient_id = db.Column(
-        db.Integer, db.ForeignKey("patient_profiles.user_id"), nullable=False
-    )
-
-    appointment_id = db.Column(
-        db.Integer, db.ForeignKey("appointments.id"), nullable=False
-    )
-
-    # Payment details
-    service_details = db.Column(db.Text, nullable=False)
-    amount = db.Column(db.Integer, nullable=False)
-    payment_method = db.Column(db.String(50), nullable=False)
-
-    remarks = db.Column(db.Text, nullable=True)
-
-    status = db.Column(
-        db.Enum(PaymentStatus), default=PaymentStatus.approved, nullable=False
-    )
+    amount = db.Column(db.Integer)
+    status = db.Column(db.String(20))  # created / success / failed
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # ORM relationships (optional but recommended)
-    user = relationship("User")
-    patient = relationship("PatientProfile")
-    appointment = relationship("Appointment")
 
 
 def seed_roles():
@@ -308,6 +291,81 @@ class RefreshToken(db.Model):
     revoked = Column(Boolean, default=False)
 
 
+class Conversation(db.Model):
+    __tablename__ = "conversations"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), nullable=False)
+    user_id = Column(db.Integer, ForeignKey("users.id"))
+
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    conversation_id = db.Column(db.Integer, db.ForeignKey("conversations.id"))
+    sender = db.Column(db.String(10))
+    text = db.Column(db.Text)
+    # agent_type = db.Column(db.String(30))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Bill(db.Model):
+    __tablename__ = "bills"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    patient_id = db.Column(
+        db.Integer,
+        db.ForeignKey("patient_profiles.user_id"),
+        nullable=False
+    )
+
+    service_type = db.Column(
+        db.String(30),  # appointment / ambulance / pharmacy / emergency
+        nullable=False
+    )
+
+    service_id = db.Column(db.Integer, nullable=False)
+
+    subtotal = db.Column(db.Integer, nullable=False)
+    tax_amount = db.Column(db.Integer, default=0)
+    discount_amount = db.Column(db.Integer, default=0)
+    total_amount = db.Column(db.Integer, nullable=False)
+
+    status = db.Column(
+        db.String(20),  # unpaid / paid / refunded
+        default="unpaid"
+    )
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+
+class BillItem(db.Model):
+    __tablename__ = "bill_items"
+
+    id = db.Column(db.Integer, primary_key=True)
+    bill_id = db.Column(db.Integer, db.ForeignKey("bills.id"))
+
+    description = db.Column(db.String(255))
+    amount = db.Column(db.Integer)
+
+
+class PharmacyInventory(db.Model):
+    __tablename__ = "pharmacy_inventory"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    pharmacy_id = db.Column(
+        db.Integer,
+        db.ForeignKey("pharmacy_profiles.user_id"),
+        nullable=False
+    )
+
+    medicine_name = db.Column(db.String(150), nullable=False)
+    quantity = db.Column(db.Integer, default=0)
+
+    is_active = db.Column(db.Boolean, default=True)
+
+   
 # class SlotStatus(str, enum.Enum):
 #     free = "free"
 #     booked = "booked"
@@ -486,21 +544,6 @@ class RefreshToken(db.Model):
 #     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class Conversation(db.Model):
-    __tablename__ = "conversations"
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(50), nullable=False)
-    user_id = Column(db.Integer, ForeignKey("users.id"))
-
-
-class Message(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    conversation_id = db.Column(db.Integer, db.ForeignKey("conversations.id"))
-    sender = db.Column(db.String(10))
-    text = db.Column(db.Text)
-    # agent_type = db.Column(db.String(30))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 # class Hospital(db.Model):

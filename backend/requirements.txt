@@ -3,3 +3,5 @@ flask-sqlalchemy
 python-dotenv
 werkzeug
 flask-jwt-extended
+google-genai
+razorpay

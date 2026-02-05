@@ -4,11 +4,17 @@ from dotenv import load_dotenv
 # Load variables from .env into environment
 load_dotenv()
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
 
 class Config:
     """
     Base configuration class
     """
+
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, "..", "uploads", "prescriptions")
+    MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB
+    ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg"}
 
     # =========================
     # FLASK CORE SECURITY

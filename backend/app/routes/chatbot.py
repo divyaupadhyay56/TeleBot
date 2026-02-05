@@ -30,19 +30,12 @@ def chat():
             db.session.commit()
 
         # 2️⃣ Save user message
-        db.session.add(
-            Message(
-                conversation_id=convo.id,
-                sender="user",
-                text=text
-            )
-        )
+        db.session.add(Message(conversation_id=convo.id, sender="user", text=text))
         db.session.commit()
 
         # 3️⃣ Build context (limit last 10 messages)
         messages = (
-            Message.query
-            .filter_by(conversation_id=convo.id)
+            Message.query.filter_by(conversation_id=convo.id)
             .order_by(Message.id.desc())
             .limit(10)
             .all()[::-1]
@@ -54,20 +47,18 @@ def chat():
 
         # 5️⃣ Save bot reply
         db.session.add(
-            Message(
-                conversation_id=convo.id,
-                sender="bot",
-                text=ai_result["reply"]
-            )
+            Message(conversation_id=convo.id, sender="bot", text=ai_result["reply"])
         )
         db.session.commit()
 
-        return jsonify({
-            "status": "success",
-            "reply": ai_result["reply"],
-            "confidence_score": ai_result["confidence_score"],
-            "conversation_id": convo.id
-        })
+        return jsonify(
+            {
+                "status": "success",
+                "reply": ai_result["reply"],
+                "confidence_score": ai_result["confidence_score"],
+                "conversation_id": convo.id,
+            }
+        )
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
