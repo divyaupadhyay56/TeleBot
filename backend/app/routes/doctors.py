@@ -21,7 +21,7 @@ def list_doctors():
 
 
 # ✅ THIS WAS MISSING
-@doctor_bp.route("/", methods=["POST"])
+@doctor_bp.route("/profile", methods=["POST"])
 @jwt_required()
 def create_doctor_profile():
     data = request.json
@@ -38,3 +38,19 @@ def create_doctor_profile():
     db.session.commit()
 
     return {"message": "Doctor profile created"}, 201
+
+@doctor_bp.route("/me", methods=["GET"])
+@jwt_required()
+def get_my_doctor_profile():
+    user_id = get_jwt_identity()
+
+    doctor = DoctorProfile.query.filter_by(user_id=user_id).first()
+    if not doctor:
+        return {"error": "Profile not found"}, 404
+
+    return {
+        "user_id": doctor.user_id,
+        "name": doctor.name,
+        "specialization": doctor.specialization,
+        "experience_years": doctor.experience_years
+    }
