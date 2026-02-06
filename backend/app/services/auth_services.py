@@ -2,7 +2,7 @@ from app.database.models import User, Role, UserRole, RefreshToken
 from app.database.db import db
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.database.models import SystemRole
-from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, get_jwt
+from flask_jwt_extended import  get_jwt_identity
 
 
 def register_user(phone, password, role_name):
@@ -36,34 +36,34 @@ def authenticate_user(phone, password):
         return None
     return user
 
-def login_user(phone, password):
-    user = User.query.filter_by(phone=phone, is_active=True).first()
-    if not user:
-        return {"error": "Invalid credentials"}, 401
+# def login_user(phone, password):
+#     user = User.query.filter_by(phone=phone, is_active=True).first()
+#     if not user:
+#         return {"error": "Invalid credentials"}, 401
 
-    if not check_password_hash(user.password_hash, password):
-        return {"error": "Invalid credentials"}, 401
+#     if not check_password_hash(user.password_hash, password):
+#         return {"error": "Invalid credentials"}, 401
 
-    access_token = create_access_token(identity=user.id)
-    refresh_token = create_refresh_token(identity=user.id)
+#     access_token = create_access_token(identity=user.id)
+#     refresh_token = create_refresh_token(identity=user.id)
 
-    # print("uSER LOGIN SUCCESSFULL")
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token
-    }, 200
+#     # print("uSER LOGIN SUCCESSFULL")
+#     return {
+#         "access_token": access_token,
+#         "refresh_token": refresh_token
+#     }, 200
 
 def logout_user():
     """
     Revoke the refresh token used for logout
     """
     user_id = int(get_jwt_identity())
-    jti = get_jwt()["jti"]
+    # jti = get_jwt()["jti"]
 
     token = RefreshToken.query.filter_by(
-        user_id=user_id,
-        token=jti,
-        revoked=False
+        user_id=user_id
+        # token=jti,
+        # revoked=False
     ).first()
 
     if not token:
