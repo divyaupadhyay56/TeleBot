@@ -64,18 +64,16 @@ def get_my_pharmacy_profile():
 
 
 # 🔹 FIND NEARBY PHARMACIES
-@pharmacy_bp.route("/nearby", methods=["POST"])
+@pharmacy_bp.route("/nearby", methods=["GET"])
 @jwt_required()
 def nearby_pharmacies():
-    data = request.json
-
-    lat = data.get("lat")
-    lng = data.get("lng")
-    radius = data.get("radius_km", 5)
+    lat = request.args.get("lat", type=float)
+    lng = request.args.get("lng", type=float)
+    radius = request.args.get("radius_km", default=5, type=float)
 
     if lat is None or lng is None:
         return {"error": "lat and lng required"}, 400
 
     return {
         "pharmacies": find_nearby_pharmacies(lat, lng, radius)
-    }
+    }, 200
