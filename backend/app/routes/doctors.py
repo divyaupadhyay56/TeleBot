@@ -26,12 +26,19 @@ def list_doctors():
 def create_doctor_profile():
     data = request.json
     user_id = get_jwt_identity()  # take from JWT, NOT from client
+    
 
+    existing = DoctorProfile.query.filter_by(user_id=user_id).first()
+    if existing:
+        return {
+            "error": "Doctor profile already exists"
+        }, 400
     doctor = DoctorProfile(
         user_id=user_id,
         name=data.get("name"),
         specialization=data.get("specialization"),
         experience_years=data.get("experience_years"),
+        hospital_id=data.get("hospital_id")
     )
 
     db.session.add(doctor)
@@ -52,5 +59,6 @@ def get_my_doctor_profile():
         "user_id": doctor.user_id,
         "name": doctor.name,
         "specialization": doctor.specialization,
-        "experience_years": doctor.experience_years
+        "experience_years": doctor.experience_years,
+        "hospital_id": doctor.hospital_id
     }

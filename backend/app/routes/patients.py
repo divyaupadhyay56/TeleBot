@@ -63,3 +63,27 @@ def get_my_patient_profile():
         "gender": profile.gender,
         "blood_group": profile.blood_group
     }
+
+@patient_bp.route("/update-profile", methods=["PUT"])
+@jwt_required()
+def update_patient_profile():
+    user_id = get_jwt_identity()
+
+    profile = PatientProfile.query.get(user_id)
+    if not profile:
+        return {"error": "Patient profile not found"}, 404
+
+    data = request.get_json()
+
+    if "name" in data:
+        profile.name = data["name"]
+    if "age" in data:
+        profile.age = data["age"]
+    if "gender" in data:
+        profile.gender = data["gender"]
+    if "blood_group" in data:
+        profile.blood_group = data["blood_group"]
+
+    db.session.commit()
+
+    return {"message": "Patient profile updated"}
