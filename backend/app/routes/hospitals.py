@@ -4,7 +4,6 @@ from app.database.models import Hospital, DoctorProfile
 
 hospital_bp = Blueprint("hospitals", __name__, url_prefix="/hospitals")
 
-
 @hospital_bp.route("/", methods=["POST"])
 def create_hospital_route():
     data = request.json
@@ -14,6 +13,46 @@ def create_hospital_route():
 
     hospital = create_hospital(data)
     return hospital, 201
+
+
+@hospital_bp.route("/", methods=["GET"])
+def list_hospitals():
+    return {"hospitals": get_all_hospitals()}
+
+import math
+
+@hospital_bp.route("/nearby", methods=["GET"])
+def nearby_hospitals():
+    lat = request.args.get("lat", type=float)
+    lng = request.args.get("lng", type=float)
+
+    if lat is None or lng is None:
+        return {"error": "lat and lng are required"}, 400
+
+    hospitals = Hospital.query.all()
+
+    results = []
+    for h in hospitals:
+        if h.latitude is None or h.longitude is None:
+            continue
+
+        distance = math.sqrt(
+            (h.latitude - lat) ** 2 +
+            (h.longitude - lng) ** 2
+        )
+
+        results.append({
+            "id": h.id,
+            "name": h.name,
+            "latitude": h.latitude,
+            "longitude": h.longitude,
+            "distance": round(distance, 4)
+        })
+
+    results.sort(key=lambda x: x["distance"])
+
+    return {"hospitals": results}
+
 
 
 @hospital_bp.route("/<int:hospital_id>", methods=["GET"])

@@ -111,10 +111,21 @@ class DoctorAvailability(db.Model):
     __tablename__ = "doctor_availability"
 
     id = db.Column(db.Integer, primary_key=True)
-    doctor_id = db.Column(db.Integer, db.ForeignKey("doctor_profiles.user_id"))
-    start_time = db.Column(db.DateTime)
-    end_time = db.Column(db.DateTime)
+
+    doctor_id = db.Column(
+        db.Integer,
+        db.ForeignKey("doctor_profiles.user_id"),
+        nullable=False
+    )
+
+    date = db.Column(db.Date, nullable=False)
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
+
     is_booked = db.Column(db.Boolean, default=False)
+    is_active = db.Column(db.Boolean, default=True)
+
+    doctor = db.relationship("DoctorProfile", backref="availabilities")
 
 
 class Appointment(db.Model):
@@ -125,6 +136,16 @@ class Appointment(db.Model):
     doctor_id = db.Column(db.Integer, db.ForeignKey("doctor_profiles.user_id"))
     appointment_time = db.Column(db.DateTime)
     status = db.Column(db.String(30), default="scheduled")
+    availability_id = db.Column(
+        db.Integer,
+        db.ForeignKey("doctor_availability.id"),
+        nullable=False,
+        unique=True  # 🔒 prevents double booking
+    )
+    status = db.Column(db.String(20), default="BOOKED")
+
+    doctor = db.relationship("DoctorProfile")
+    availability = db.relationship("DoctorAvailability")
 
 
 # ======================
